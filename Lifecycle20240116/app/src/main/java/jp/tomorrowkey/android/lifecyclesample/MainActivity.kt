@@ -17,6 +17,10 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.compose.LifecycleStartEffect
+import androidx.lifecycle.compose.currentStateAsState
 import jp.tomorrowkey.android.lifecyclesample.ui.theme.LifecycleSampleTheme
 
 class MainActivity : ComponentActivity() {
@@ -26,6 +30,32 @@ class MainActivity : ComponentActivity() {
             // Old way
             ObserveLifecycleEvent { event ->
                 Log.d("ObserveLifecycleEvent", "event: $event")
+            }
+
+            // New way
+            val state by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
+            Log.d("currentStateAsState", "event: $state")
+
+            LifecycleEventEffect(event = Lifecycle.Event.ON_CREATE) {
+                Log.d("LifecycleEventEffect", "event: onCreate")
+            }
+            LifecycleEventEffect(event = Lifecycle.Event.ON_RESUME) {
+                Log.d("LifecycleEventEffect", "event: onResume")
+            }
+
+            LifecycleResumeEffect(Unit) {
+                Log.d("LifecycleResumeEffect", "event: onResume")
+
+                onPauseOrDispose {
+                    Log.d("LifecycleResumeEffect", "event: onPauseOrDispose")
+                }
+            }
+            LifecycleStartEffect(Unit) {
+                Log.d("LifecycleResumeEffect", "onStart")
+
+                onStopOrDispose {
+                    Log.d("LifecycleResumeEffect", "event: onStopOrDispose")
+                }
             }
 
             LifecycleSampleTheme {
